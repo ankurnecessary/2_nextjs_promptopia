@@ -6,7 +6,20 @@ import { useState, useEffect } from "react";
 import { signIn, signOut, useSession, getProvider } from "next-auth/react";
 
 const Nav = () => {
-  const isUserLoggedIn = true;
+  const isUserLoggedIn = false;
+
+  // Start: To help us sign in using social media handles
+  // For the time being we are going to get only google handle
+  const [providers, setProviders] = useState(null);
+  useEffect(() => {
+    const setProviders = async () => {
+      const response = await getProvider();
+      setProviders(response);
+    };
+
+    setProviders();
+  }, []);
+  // End: To help us sign in using social media handles
 
   return (
     <nav className="flex-between w-full mb-16 pt-3">
@@ -44,7 +57,21 @@ const Nav = () => {
             </div>
           </div>
         ) : (
-          <></>
+          <>
+            {/* Start: Will show the social media buttons to sign in */}
+            {providers &&
+              Object.values(providers).map((provider) => (
+                <button
+                  type="button"
+                  key={provider.name}
+                  onClick={() => signIn(provider.id)}
+                  className="black_btn"
+                >
+                  Sign In
+                </button>
+              ))}
+            {/* End: Will show the social media buttons to sign in */}
+          </>
         )}
       </div>
     </nav>
